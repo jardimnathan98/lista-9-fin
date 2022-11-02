@@ -51,3 +51,37 @@ j<-j+1
 
 #montar consumo per capita
 
+population<-read_excel("C:/Users/Nathan/Downloads/livros economia/financas/finanças puc/lista 9/pop brasil.xlsx")
+population<-population[-(1:14),1:2]
+datas_year<-as.character(seq(as.Date("1960/12/31"), by = "year", length.out = nrow(population)-1))
+datas_year<-rev(datas_year)
+
+population[-1,1]<-datas_year
+colnames(population)<-c('periodo', 'populacao')
+
+year2qquarter<-function(population ,inicial, final){
+  datas_quarter<-as.character(seq( from= as.Date(inicial), by = "quarter", to=as.Date(final)))
+  datas_quarter<-cbind(rev(datas_quarter),1)
+j<-1
+  for(i in 2:(nrow(population)-1)){
+    datas_quarter[j,2]<-as.numeric(population[i,2]) -0*(as.numeric(population[i,2])-as.numeric(population[i+1,2]))/4
+    datas_quarter[j+1,2]<-as.numeric(population[i,2]) -1*(as.numeric(population[i,2])-as.numeric(population[i+1,2]))/4
+    datas_quarter[j+2,2]<-as.numeric(population[i,2]) -2*(as.numeric(population[i,2])-as.numeric(population[i+1,2]))/4
+    datas_quarter[j+3,2]<-as.numeric(population[i,2]) -3*(as.numeric(population[i,2])-as.numeric(population[i+1,2]))/4
+     j<-j+4
+    }
+return(datas_quarter)
+}
+
+inicial="1960/12/31"
+
+final="2021-12-31"
+pop_quarter<-year2qquarter(population, inicial, final)
+
+consumo<-read_excel("C:/Users/Nathan/Downloads/livros economia/financas/finanças puc/lista 9/consumo real ajustado.xlsx")
+consumo<-consumo[-(1:14),1:2]
+datas_quart<-as.character(seq(as.Date("1996/03/31"), by = "quarter", length.out = nrow(consumo)-1))
+datas_quart<-rev(datas_quart)
+
+consumo[-1,1]<-datas_quart
+colnames(consumo)<-c('periodo', 'consumo')
